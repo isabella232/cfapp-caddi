@@ -129,8 +129,6 @@ CloudFlare.define( 'caddi',
 
     var cfOwl           = owl.createDispatcher('caddi');
 
-    D  &&  console.log( 'owl created cfOwl' , cfOwl );
-
     /* 
      * create HTML
      */
@@ -154,20 +152,17 @@ CloudFlare.define( 'caddi',
                 ' .cfad-y-bot { bottom: 15px; } ' + 
                 ' .cfad-y-top { top: 15px; } ' ; 
 
-    D  &&  console.log( "vars were set: isLeft=" + isLeft );
 
     $('head').append(  '<style type="text/css">' + css + '</style>' );
 
     $('<div/>').attr('id', a).html(iframe).appendTo('body');
     $('<a href="#">x</a>').attr('id',x).appendTo(ar);
 
-    $(ar).addClass( ( isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
+    $(ar).addClass( (isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
     $(fr).addClass( isLeft ? 'cfadf-l' : 'cfadf-r' );
     $(xr).addClass( isLeft ? 'cfadx-l' : 'cfadx-r' );
 
     if ( ! isBottom && ! cfg.scroll )  $(ar).css('position', 'relative');
-
-    var fooClick = function() {  console.log( 'doing some Foo!' ) };
 
     var removeOp = function(){ 
             if ( cfg.user_pause_ttl ){
@@ -213,7 +208,7 @@ CloudFlare.define( 'caddi',
     }, 6000 );
 
 
-    cfOwl.dispatch( { action: 'load', orient: orient, });
+    cfOwl.dispatch( { action: 'load', orient: orient });
 
     D  &&  console.log('caddi display complete; Owl dispatched' );
 
