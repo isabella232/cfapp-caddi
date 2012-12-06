@@ -2,12 +2,11 @@
 
 CloudFlare.define( 'caddi', 
     [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owldev',   'cloudflare/jquery1.7' ], 
-    function(cfg,           dom,                user,               owl,                jQuery ) {
+    function(cfg,           dom,                user,               owl,                    jQuery ) {
 
     var $ = jQuery;
 
     var section_id  = '3628055';    // default: static+video  
-
     if ( cfg && cfg.text_only ){ 
         section_id = '3628054';    // static only
     }
@@ -20,7 +19,6 @@ CloudFlare.define( 'caddi',
      *  ss_view_max_ct  [ 0 | INT ]
      *  min_resolution  [ 0 | 1024x0 | 1600x0 ]
      *  debug           [ 1 | 0 ]
-     *
      */
 
     /*
@@ -32,6 +30,8 @@ CloudFlare.define( 'caddi',
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
+        fadeInDelay = 1200,
+        rollbackTTL = 60000,
         D           = cfg.debug || 1,
 
         installCookie = function(name,val,ttl) {
@@ -190,7 +190,7 @@ CloudFlare.define( 'caddi',
      *
      */
 
-    $(ar).delay(1600).animate( { width: '320px' }, tx )
+    $(ar).delay(fadeInDelay).animate( { width: '320px' }, tx )
 
     var timeoutId = null;
     window.setTimeout( function(){  
@@ -205,7 +205,7 @@ CloudFlare.define( 'caddi',
             $(xr).html('>');
             $(xr).unbind('click').click( maximizeOp );
         });
-    }, 6000 );
+    }, rollbackTTL );
 
 
     cfOwl.dispatch( { action: 'load', orient: orient });
