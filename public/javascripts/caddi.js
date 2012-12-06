@@ -182,6 +182,10 @@ CloudFlare.define( 'caddi',
 
     $(xr).click( removeOp );
 
+    $(fr).click( function(){ 
+            cfOwl.dispatch( {action: 'click', orient: orient });
+    });
+
 
     /** 
      * setTimeout flow
