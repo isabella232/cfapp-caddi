@@ -1,8 +1,7 @@
 
 
-CloudFlare.define( 'caddi', 
-    [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owldev',   'cloudflare/jquery1.7' ], 
-    function(cfg,           dom,                user,               owl,                    jQuery ) {
+CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owldev',   'cloudflare/jquery1.7' ], 
+                            function(cfg,           dom,                user,               owl,                    jQuery ) {
 
     var $ = jQuery;
 
@@ -26,12 +25,13 @@ CloudFlare.define( 'caddi',
      */
 
     var delim       = '|',
-        sessionTTL  = 1200,
+        sessionTTL  = 1200,             // seconds
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
-        fadeInDelay = 1200,
-        rollbackTTL = 60000,
+        fadeInDelay = 1200,             // mlsec
+        viewTTL     = 60000,            // mlsec -how long to show before rollback
+
         D           = cfg.debug || 1,
 
         installCookie = function(name,val,ttl) {
@@ -135,16 +135,20 @@ CloudFlare.define( 'caddi',
 
     var a = 'cfad',     // id="cfad"
         ar = '#'+a,     // reference of id;  #cfad
+        b   = a + 'b',
+        br  = '#'+b,
         x   = a + 'x',  // x=close
         xr  = '#'+x,
         f   = a + 'f',  // f=frame
         fr  = '#'+f,
-        tx  = 1000,     // slider fade-in time
+        tx  = 1000,     // slider slide time
+        fullWidth   = '310px',
         iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' 
                 + section_id + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
         css = 
-                ' #cfad  { background-color: #ffffff; height: 280px; width:0px; margin-bottom: 25px; padding: 2px 0; position: fixed; z-index: 99999; overflow: hidden; } ' + 
-                ' #cfadf { height: 250px; width: 300px; margin: 0px; padding: 3px; background-color: #ffffff; border: 1px solid #404040;  } ' +
+                ' #cfad  { background-color: #ffffff; height: 280px; width:0px; padding: 2px 0; position: fixed; z-index: 99999; overflow: hidden; } ' + 
+                ' #cfadb  { position:relative }' + 
+                ' #cfadf { height: 250px; width: 300px; margin: 0px; padding: 3px; background-color: #ffffff; border: 1px solid #404040; } ' +
                 ' #cfadx { background-color: #ffffff; margin-top: -1px; color: #404040; font-weight: bold; font: 16px Helvetica,Arial,Sans-serif; padding: 0px 5px 0.6px 4px; text-decoration: none; border: 0; border-bottom:  1px solid #404040; position: absolute; display: block; } ' + 
                 ' .cfad-l { left: 0px; } .cfad-r { right: 0px; text-align:right}  ' + 
                 ' .cfadf-l { border-left: 0px ! important; } .cfadf-r { border-right:0px ! important; } ' + 
@@ -152,69 +156,87 @@ CloudFlare.define( 'caddi',
                 ' .cfad-y-bot { bottom: 15px; } ' + 
                 ' .cfad-y-top { top: 15px; } ' ; 
 
+    D  &&  console.log( "vars were set: isLeft=" + isLeft );
 
     $('head').append(  '<style type="text/css">' + css + '</style>' );
 
-    $('<div/>').attr('id', a).html(iframe).appendTo('body');
-    $('<a href="#">x</a>').attr('id',x).appendTo(ar);
+    $('<div/>').attr('id', a).appendTo('body');
+    $('<div/>').attr('id', b).html(iframe).appendTo(ar)
+    $('<a href="#">x</a>').attr('id',x).appendTo(br);
 
-    $(ar).addClass( (isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
+    $(ar).addClass( ( isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
     $(fr).addClass( isLeft ? 'cfadf-l' : 'cfadf-r' );
     $(xr).addClass( isLeft ? 'cfadx-l' : 'cfadx-r' );
 
     if ( ! isBottom && ! cfg.scroll )  $(ar).css('position', 'relative');
 
-    var removeOp = function(){ 
+    var timeoutId   = null,
+        onIf        = false,  // cursor on iframe
+        showCycles  = 0,
+        removeOp    = function(){ 
             if ( cfg.user_pause_ttl ){
                 D  &&  console.log( 'adding user_pause_ttl = ' + cfg.user_pause_ttl );
                 cookie.pauseUntil = currTime + cfg.user_pause_ttl; 
                 writeCookie(cookieName,cookie);
             }
+            window.clearTimeout(timeoutId);
             $(ar).remove();
             cfOwl.dispatch( {action: 'close', orient: orient });
         },
+
         maximizeOp = function(){
-            $(ar).animate( { width: '320px' } , 'slow', function() { 
+            $(fr).css( { width: '300px' });
+            $(ar).animate( { width: fullWidth } , 'slow', function() { 
+                D  &&  console.log( 'maximizeOp ');  
+                // viewTTL *= 2;
                 $(xr).html('x');
                 $(xr).unbind('click').click( removeOp );
+                // do we allow it to minimize again? 
+                if ( ++showCycles < 2 ) {
+                    D  &&  console.log( showCycles + ' showCycles; installing setTimeout for minimizeOp' );
+                    timeoutId = setTimeout( minimizeOp, viewTTL );
+                }
             });
+        },
+
+        minimizeOp = function(){ 
+            D  &&  console.log( 'starting minimizeOp (rollback)' );
+
+            if (!  $(ar).length ) { 
+                return;                 // element has been removed via close click
+            }
+            $(fr).animate( { width: '22px' } , 'slow', function(){ 
+                D  &&  console.log( 'installing hover handler....' );
+                $(ar).css('width','32px');
+                $(xr).html('>');
+                $(xr).unbind('click').click( maximizeOp );
+                $(ar).unbind('hover').hover( function(){ onIf = true; maximizeOp() }, function(){ onIf = false }  );
+            });
+             
         };
 
     $(xr).click( removeOp );
+    $(ar).delay(1600).animate( { width: fullWidth }, tx );
 
-    $(fr).click( function(){ 
-            cfOwl.dispatch( {action: 'click', orient: orient });
+    window.setTimeout( minimizeOp, viewTTL );
+
+    $(fr).ready( function() {
+        D  &&  console.log( "  frame content is ready; dispatching owl " );
+        
+        cfOwl.dispatch( { action: 'load', orient: orient, });
+
+        $(ar).hover( function(){ onIf = true }, function(){ onIf = false } );
+
+        $(window).blur( function() {
+            if( onIf ) {
+                cfOwl.dispatch( {action: 'click', orient: orient });
+            }
+        }) 
     });
 
-
-    /** 
-     * setTimeout flow
-     *   after N seconds, animate to reduce to gutter, eg. 4px;
-     *   attatch listener for hover that fires re-animate to full size
-     *
-     */
-
-    $(ar).delay(fadeInDelay).animate( { width: '320px' }, tx )
-
-    var timeoutId = null;
-    window.setTimeout( function(){  
-        D  &&  console.log( 'starting timeout function to rollback ad' );
-
-        if (!  $(ar).length ) { 
-            window.clearTimeout(timeoutID);  // element has been removed via close click
-            return;
-        }
-        $(ar).animate( { width: '18px' } , 'slow', function(){ 
-            D  &&  console.log( 'installing alternate click handler....' );
-            $(xr).html('>');
-            $(xr).unbind('click').click( maximizeOp );
-        });
-    }, rollbackTTL );
-
-
-    cfOwl.dispatch( { action: 'load', orient: orient });
-
-    D  &&  console.log('caddi display complete; Owl dispatched' );
+    D  &&  console.log('caddi code complete' );
 
 } );
+
+
 
