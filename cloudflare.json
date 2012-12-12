@@ -1,12 +1,12 @@
 {
-    "name": "Caddi",
-    "description": "An app to provide additional advertisement on your site's web pages.",
+    "name": "Slider",
+    "description": "The Slider is an innovative ad unit that earns you revenue with every impression. It is complementary to your existing ads, can be enabled with a single click and is available exclusively to CloudFlare users.",
     "keywords" : [
         "advertising",
         "monetization",
         "ads"
         ],
-    "version": "0.4.0",
+    "version": "0.4.1",
     "category":"advertising",
     "contributors": [
         {
@@ -17,15 +17,17 @@
     "repository" : {
         "type" : "git",
         "url" : "https://github.com/gleecology/cfapp-caddi.git"
-    },
+     },
     "main" : "./public/javascripts/caddi.js",
+
     "dependencies" : {
     },
     "licenses" : [
-    {
-        "type": "MIT",
-        "url": "http://www.opensource.org/licenses/MIT"
-    }],
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/MIT"
+        }
+    ],
     "implements" : "AMD",
     "scripts" : {
     },
@@ -43,37 +45,90 @@
         "details": {
            "Category": "advertising",
            "Language": "English",
-           "Restrictions": "Some"
+           "Restrictions": "Use of the Slider is subject to approval. CloudFlare reserves the right to deny access due to misuse or abuse."
        },
        "interface": [
+          {
+            "id": "orient",
+            "name": "Ad Orientation",
+            "description" : "Select where to place the Slider on your site",
+            "type": "select",
+            "options": [
+                { "value": "left",          "label": "Left Top"             },
+                { "value": "right",         "label": "Right Top",    "selected": "true" },
+                { "value": "left_bottom",   "label": "Left Bottom"      },
+                { "value": "right_bottom",  "label": "Right Bottom"     }
+            ]
+          },
+
+          {
+            "id": "text_only",
+            "name": "Ad Format",
+            "description" : "Choose to display only static ads, or static and video ads",
+            "type": "select",
+            "options": [
+                { 
+                    "label": "Static and Video",
+                    "value": 0
+                },
+                { 
+                    "label": "Static only",
+                    "value": 1,
+                    "selected": true
+                }
+             ] 
+          },
+            
+          {
+            "id": "min_resolution",
+            "name": "Minimum Resolution",
+            "description" : "Prevent the Slider from covering your content by limiting display to the following window sizes",
+            "type": "select",
+            "options": [
+                { "value": 0,           "label": "All resolutions",  "selected": "true" },
+                { "value": "1024x0",    "label": "wider than 1024" },
+                { "value": "1600x0",    "label": "wider than 1600" }
+            ]
+          },
+
+          {
+            "id": "scroll",
+            "name": "Sticky Scroll",
+            "description" : "Allow the Slider to scroll within the browser window with Sticky Scroll",
+            "type": "select",
+            "options": [
+                { "value": 0,       "label": "Off",    "selected": "true" },
+                { "value": 1,       "label": "On" }
+            ]
+          },
+          
 
           {
             "id": "ss_view_max_ct",
             "name": "Impressions Per Session",
-            "description" : "Number of ads displayed to user in 20 min. period",
+            "description" : "Choose the maximum number of impressions to be shown per visitor session (20 minutes)",
             "type": "select",
             "options": [
                 { 
-                    "label": "Unlimited",
-                    "selected": true,
+                    "label": "No limit",
                     "value": 0
                 },
                 { "value": 50,  "label": "50 impressions"  },
-                { "value": 25,  "label": "25 impressions"  },
+                { "value": 25,  "label": "25 impressions", "selected": true  },
                 { "value": 10,  "label": "10 impressions"  },
                 { "value": 5,   "label": "5 impressions"   },
-                { "value": 1,   "label": "1 impression"   }
+                { "value": 1,   "label": "1 impressions"   }
             ] 
           },
 
           {
             "id": "user_pause_ttl",
-            "name": "User's Rate Limit",
-            "description" : "How long to wait to show ad after user manually closes one (hours)",
+            "name": "Visitor Opt-out Period",
+            "description" : "Select the period of time to pause the Slider after it is closed by a visitor",
             "type": "select",
             "options": [
                 { 
-                    "label": "None",
+                    "label": "Do not pause",
                     "selected": true,
                     "value": 0
                 },
@@ -86,63 +141,8 @@
                 { "value": 259200,  "label": "72 hours" },
                 { "value": 315360000, "label": "Never show again" }
             ] 
-          },
-            
-          {
-            "id": "scroll",
-            "name": "Sticky Scroll",
-            "description" : "Ad scrolls with page",
-            "type": "select",
-            "options": [
-                { "value": 0,       "label": "Off" },
-                { "value": 1,       "label": "On",    "selected": "true" }
-            ]
-          },
-
-            
-          {
-            "id": "min_resolution",
-            "name": "Minimum resolution",
-            "description" : "Only show ads in browsers based on window size",
-            "type": "select",
-            "options": [
-                { "value": 0,           "label": "All resolutions",  "selected": "true" },
-                { "value": "1024x0",    "label": "wider than 1024" },
-                { "value": "1600x0",    "label": "wider than 1600" }
-            ]
-          },
-
-          {
-            "id": "orient",
-            "name": "Ad Orientation",
-            "description" : "Which side of page ad appears on",
-            "type": "select",
-            "options": [
-                { "value": "right",         "label": "Right",    "selected": "true" },
-                { "value": "left",          "label": "Left"             },
-                { "value": "left_bottom",   "label": "Left Bottom"      },
-                { "value": "right_bottom",  "label": "Right Bottom"     }
-            ]
-          },
-
-
-          {
-            "id": "text_only",
-            "name": "Ad format",
-            "description" : "Which ad formats to display",
-            "type": "select",
-            "options": [
-                { 
-                    "label": "Text and Video",
-                    "value": 0,
-                    "selected": true
-                },
-                { 
-                    "label": "Text only",
-                    "value": 1
-                }
-            ] 
           }
         ]
     }
 }
+

@@ -1,11 +1,11 @@
 
-
 CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owldev',   'cloudflare/jquery1.7' ], 
                             function(cfg,           dom,                user,               owl,                    jQuery ) {
 
     var $ = jQuery;
 
     var section_id  = '3628055';    // default: static+video  
+
     if ( cfg && cfg.text_only ){ 
         section_id = '3628054';    // static only
     }
@@ -18,6 +18,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
      *  ss_view_max_ct  [ 0 | INT ]
      *  min_resolution  [ 0 | 1024x0 | 1600x0 ]
      *  debug           [ 1 | 0 ]
+     *
      */
 
     /*
@@ -25,13 +26,11 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
      */
 
     var delim       = '|',
-        sessionTTL  = 1200,             // seconds
+        sessionTTL  = 1200,
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
-        fadeInDelay = 1200,             // mlsec
-        viewTTL     = 60000,            // mlsec -how long to show before rollback
-
+        cVal        = '',
         D           = cfg.debug || 1,
 
         installCookie = function(name,val,ttl) {
@@ -40,7 +39,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 exp.setTime( exp.getTime() + (ttl * 1000) );
             }
             D  &&  console.log( 'installCookie name=' + name + ' val=' + val );
-            document.cookie = name + "=" + escape(val) + (ttl ? ";expires=" + exp.toUTCString() : '' );
+            document.cookie = name + "=" + val + (ttl ? ";expires=" + exp.toUTCString() : '' );
         }, 
     
         readCookieAttrs = function(str) {
@@ -64,7 +63,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             for ( i = 0; i < cookieCol.length; i++){ 
                 vals.push( C[cookieCol[i]] || 0);
             }
-            installCookie( cName, vals.join(delim), ttl );
+            cVal    = vals.join(delim);
+            installCookie( cName, cVal, ttl );
         };
 
         orient      = cfg.orient || 'left',
@@ -87,6 +87,9 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     cookie.N++;
 
     if (dom.ios || dom.android ){ 
+        terminate++;
+    }
+    if ( window.location.protocol() === 'https:' ){
         terminate++;
     }
 
@@ -128,6 +131,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     }
 
     var cfOwl           = owl.createDispatcher('caddi');
+
+    D  &&  console.log( 'owl created cfOwl' , cfOwl );
 
     /* 
      * create HTML
@@ -171,6 +176,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     if ( useScroll )   $(ar).css('position', 'fixed');
 
     var timeoutId   = null,
+        viewTTL     = 10000,
         onIf        = false,  // cursor on iframe
         showCycles  = 0,
         removeOp    = function(){ 
@@ -181,7 +187,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             }
             window.clearTimeout(timeoutId);
             $(ar).remove();
-            cfOwl.dispatch( {action: 'close', orient: orient });
+            cfOwl.dispatch( {action: 'close', orient: orient, c: cVal });
         },
 
         maximizeOp = function(){
@@ -215,21 +221,23 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
              
         };
 
-    $(xr).click( removeOp );
-    $(ar).delay(1600).animate( { width: fullWidth }, tx );
-
-    window.setTimeout( minimizeOp, viewTTL );
 
     $(fr).ready( function() {
+        window.setTimeout( minimizeOp, viewTTL );
+
+        $(ar).delay(1600).animate( { width: fullWidth }, tx )
+        $(xr).click( removeOp );
+
         D  &&  console.log( "  frame content is ready; dispatching owl " );
         
-        cfOwl.dispatch( { action: 'load', orient: orient, });
+        cfOwl.dispatch( { action: 'load', orient: orient, c: cVal });
 
         $(ar).hover( function(){ onIf = true }, function(){ onIf = false } );
 
         $(window).blur( function() {
+            D  &&  console.log( "  BLUR EVENT " );
             if( onIf ) {
-                cfOwl.dispatch( {action: 'click', orient: orient });
+                cfOwl.dispatch( {action: 'click', orient: orient, c: cVal });
             }
         }) 
     });
