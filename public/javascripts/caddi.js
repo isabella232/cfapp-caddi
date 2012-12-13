@@ -2,24 +2,23 @@
 CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owl',       'cloudflare/jquery1.7' ], 
                             function(cfg,           dom,                user,               owl,                    jQuery ) {
 
-    var $ = jQuery;
-        
-    var section_id  = '3628055';    // default: static+video  
+    var $ = jQuery; 
 
-    if ( cfg && cfg.text_only ){ 
-        section_id = '3628054';    // static only
-    }
- 
     /* config vars:
      *  text_only       [ 0  | 1 ]
-     *  orient          [ left | right | left_bottom | right_bottom ]
-     *  user_pause_ttl  [ -1 | 0 | INT ]
      *  scroll          [ 0 | 1 ]
+     *  debug           [ 1 | 0 ]
+     *  user_pause_ttl  [ -1 | 0 | INT ]
+     *  orient          [ left | right | left_bottom | right_bottom ]
      *  ss_view_max_ct  [ 0 | INT ]
      *  min_resolution  [ 0 | 1024x0 | 1600x0 ]
-     *  debug           [ 1 | 0 ]
      *
      */
+
+    // fix our integers!
+    [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct','http_only' ].map(function(k){
+        cfg[k] = parseInt(cfg[k]) || 0;
+    });
 
     /*
      * setup vars
@@ -31,7 +30,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
         cVal        = '',
-        httpOnly    = true,
+        httpOnly    = parseInt( cfg.http_only ) || 1,
+        sectionId   = ( cfg.text_only ) ? '3628054' : '3628055',
         D           = cfg.debug || 1,
         V           = cfg.version || '0.4.2',
 
@@ -50,7 +50,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             D  &&  console.log( "readCookieAttrs starts on str", str, arr );
 
             for ( i = 0; i < cookieCol.length; i++ ){ 
-                C[ cookieCol[i] ] = arr[i] || 0;
+                C[ cookieCol[i] ] = arr[i]  ? parseInt(arr[i]) : 0;
             }
             D  &&  console.log( "finish loop", C );
             ( C.timeFirst && parseInt(C.timeFirst) && C.timeFirst > 1354151978 )  || ( C.timeFirst  = currTime );
@@ -67,18 +67,18 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             }
             cVal    = vals.join(delim);
             installCookie( cName, cVal, ttl );
-        };
+        },
 
         orient      = cfg.orient || 'left',
         isLeft      = orient.indexOf('left') >= 0   ? true : false,
         isBottom    = orient.indexOf('bottom') >= 0 ? true : false,
-        useScroll   = ( cfg.scroll || isBottom ) ? 1 : 0,
-        minRes      = ( cfg.min_resolution ) ?  cfg.min_resolution.split('x') : null,
+        useScroll   = ( parseInt(cfg.scroll) || isBottom ) ? 1 : 0,
+        minRes      = ( cfg.min_resolution && cfg.min_resolution.indexOf('x') > 0 ) ?  cfg.min_resolution.split('x') : null,
 
-        cookieName  =  'cfapp_caddi'+section_id,
+        cookieName  =  'cfapp_caddi'+sectionId,
         cookie      =  readCookieAttrs( user.getCookie(cookieName) ),
-        inSession   = (( currTime - cookie.sessionStart ) < sessionTTL ) ? 1 : 0
-        viewport    = dom.getViewport();
+        inSession   = (( currTime - cookie.sessionStart ) < sessionTTL ) ? 1 : 0,
+        viewport    = dom.getViewport(),
         terminate   = false; 
 
     /*
@@ -119,7 +119,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     }
    
 
-    if ( cfg.ss_view_max_ct && cookie.sessionViewCt >= cfg.ss_view_max_ct){
+    if ( cfg.ss_view_max_ct && cookie.sessionViewCt >= cfg.ss_view_max_ct ) {
         terminate++;
     }else{
         cookie.sessionViewCt++;
@@ -129,7 +129,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     writeCookie(cookieName,cookie);
 
     if ( terminate ) { 
-        D   &&  console.log( 'TERMINATE' );
+        D   &&  console.log( 'TERMINATE; val='+ terminate );
         return;
     }
 
@@ -152,7 +152,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         tx  = 1000,     // slider slide time
         fullWidth   = '310px',
         iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' 
-                + section_id + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
+                + sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
         css = 
                 ' #cfad  { background-color: #ffffff; height: 280px; width:0px; padding: 2px 0; position: absolute; z-index: 99999; overflow: hidden; } ' + 
                 ' #cfadb  { position:relative }' + 
