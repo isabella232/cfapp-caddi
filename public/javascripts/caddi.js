@@ -154,7 +154,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' 
                 + sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
         css = 
-                ' #cfad  { background-color: #ffffff; height: 280px; width:0px; padding: 2px 0; position: absolute; z-index: 99999; overflow: hidden; } ' + 
+                ' #cfad  { height: 280px; width:0px; padding: 2px 0; position: absolute; z-index: 99999; overflow: hidden; } ' + 
                 ' #cfadb  { position:relative }' + 
                 ' #cfadf { height: 250px; width: 300px; margin: 0px; padding: 3px; background-color: #ffffff; border: 1px solid #404040; } ' +
                 ' #cfadx { background-color: #ffffff; margin-top: -1px; color: #404040; font-weight: bold; font: 16px Helvetica,Arial,Sans-serif; padding: 0px 5px 0.6px 4px; text-decoration: none; border: 0; border-bottom:  1px solid #404040; position: absolute; display: block; } ' + 
@@ -197,14 +197,12 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             $(fr).css( { width: '300px' });
             $(ar).animate( { width: fullWidth } , 'slow', function() { 
                 D  &&  console.log( 'maximizeOp ');  
-                // viewTTL *= 2;
                 $(xr).html('x');
                 $(xr).unbind('click').click( removeOp );
                 // do we allow it to minimize again? 
-                if ( ++showCycles < 2 ) {
-                    D  &&  console.log( showCycles + ' showCycles; installing setTimeout for minimizeOp' );
-                    timeoutId = setTimeout( minimizeOp, viewTTL );
-                }
+                if ( ++showCycles == 2 ) viewTTL*=2;
+                D  &&  console.log( showCycles + ' showCycles; installing setTimeout for minimizeOp; viewTTL='+viewTTL );
+                timeoutId = setTimeout( minimizeOp, viewTTL );
             });
         },
 
