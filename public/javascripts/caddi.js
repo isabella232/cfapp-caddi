@@ -32,7 +32,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    =  currTs(),
         cVal        = '',
         httpOnly    = true,
-        D           = cfg.debug || 1
+        D           = cfg.debug || 1,
         V           = cfg.version || '0.4.2',
 
         installCookie = function(name,val,ttl) {
@@ -91,7 +91,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     if (dom.ios || dom.android ){ 
         terminate++;
     }
-    if ( httpOnly &&  window.location.protocol() === 'https:' ){
+    if ( httpOnly &&  window.location.protocol === 'https:' ){
         terminate++;
         D  &&  console.log( "httpOnly; terminate="+terminate);
     }
