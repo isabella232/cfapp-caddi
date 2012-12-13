@@ -1,9 +1,9 @@
 
-CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owldev',   'cloudflare/jquery1.7' ], 
+CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owl',       'cloudflare/jquery1.7' ], 
                             function(cfg,           dom,                user,               owl,                    jQuery ) {
 
     var $ = jQuery;
-
+        
     var section_id  = '3628055';    // default: static+video  
 
     if ( cfg && cfg.text_only ){ 
@@ -31,7 +31,9 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
         cVal        = '',
-        D           = cfg.debug || 1,
+        httpOnly    = true,
+        D           = cfg.debug || 1
+        V           = cfg.version || '0.4.2',
 
         installCookie = function(name,val,ttl) {
             if ( ttl ) { 
@@ -82,15 +84,16 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     /*
      * logic: eligibility, cookie, etc.
      */
-    D  &&  console.log( "caddi starts with cfg", cfg );
+    D  &&  console.log( "caddi starts; version="+V+"config:", cfg );
 
     cookie.N++;
 
     if (dom.ios || dom.android ){ 
         terminate++;
     }
-    if ( window.location.protocol() === 'https:' ){
+    if ( httpOnly &&  window.location.protocol() === 'https:' ){
         terminate++;
+        D  &&  console.log( "httpOnly; terminate="+terminate);
     }
 
     if(  minRes && viewport ) {
