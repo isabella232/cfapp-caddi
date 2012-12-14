@@ -15,7 +15,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
      *
      */
 
-    // fix our integers!
+    // integer-gize!
     [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct','http_only' ].map(function(k){
         cfg[k] = parseInt(cfg[k]) || 0;
     });
@@ -29,11 +29,11 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
-        cVal        = '',
         httpOnly    = parseInt( cfg.http_only ) || 1,
         sectionId   = ( cfg.text_only ) ? '3628054' : '3628055',
+        V           = cfg.version || '0.4.6',
         D           = cfg.debug || 1,
-        V           = cfg.version || '0.4.2',
+        cVal        = '',
 
         installCookie = function(name,val,ttl) {
             if ( ttl ) { 
@@ -215,7 +215,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             $(fr).animate( { width: '22px' } , 'slow', function(){ 
                 D  &&  console.log( 'installing hover handler....' );
                 $(ar).css('width','32px');
-                $(xr).html('>');
+                $(xr).html( isLeft ? '>' : '<' );
                 $(xr).unbind('click').click( maximizeOp );
                 $(ar).unbind('hover').hover( function(){ onIf = true; maximizeOp() }, function(){ onIf = false }  );
             });
