@@ -30,7 +30,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
         currTime    =  currTs(),
         httpOnly    = parseInt( cfg.http_only ) || 1,
-        sectionId   = ( cfg.text_only ) ? '3628054' : '3628055',
+        sectionId   = ( cfg.text_only ) ? '3612448' : '3612448',        // fires ad counicl
         V           = cfg.version || '0.4.6',
         D           = cfg.debug || 1,
         cVal        = '',
