@@ -6,7 +6,7 @@
         "monetization",
         "ads"
         ],
-    "version": "0.4.7",
+    "version": "0.4.8",
     "category":"advertising",
     "contributors": [
         {
@@ -79,13 +79,28 @@
              ] 
           },
             
+
+          {
+            "id": "view_ttl",
+            "name": "Slide Out",
+            "description" : "Minimize Slider after a the selected period of time",
+            "type": "select",
+            "options": [
+                { "value": 0,       "label": "Do not minimize",  "selected": "true" },
+                { "value": "45",    "label": "45 seconds" },
+                { "value": "30",    "label": "30 seconds" },
+                { "value": "20",    "label": "20 seconds" }
+             ] 
+          },
+                
           {
             "id": "min_resolution",
             "name": "Minimum Resolution",
-            "description" : "Prevent the Slider from covering your content by limiting display to the following window sizes",
+            "description" : "Limit display of the Slider to the following window sizes",
+                    
             "type": "select",
             "options": [
-                { "value": 0,           "label": "All resolutions",  "selected": "true" },
+                { "value": 0,           "label": "All window sizes",  "selected": "true" },
                 { "value": "1024x0",    "label": "wider than 1024" },
                 { "value": "1600x0",    "label": "wider than 1600" }
             ]
@@ -105,8 +120,8 @@
 
           {
             "id": "ss_view_max_ct",
-            "name": "Impressions Per Session",
-            "description" : "Choose the maximum number of impressions to be shown per visitor session (20 minutes)",
+            "name": "Impressions per Session",
+            "description" : "Limit the number of impressions shown per session (20 min)",
             "type": "select",
             "options": [
                 { 

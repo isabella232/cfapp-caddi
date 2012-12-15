@@ -8,15 +8,16 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
      *  text_only       [ 0  | 1 ]
      *  scroll          [ 0 | 1 ]
      *  debug           [ 1 | 0 ]
-     *  user_pause_ttl  [ -1 | 0 | INT ]
+     *  user_pause_ttl  [ -1 | 0 | INT ] seconds
      *  orient          [ left | right | left_bottom | right_bottom ]
      *  ss_view_max_ct  [ 0 | INT ]
+     *  view_ttl        [ 0 | INT ]  seconds; but used in MS timer
      *  min_resolution  [ 0 | 1024x0 | 1600x0 ]
      *
      */
 
     // integer-gize!
-    [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct','http_only' ].map(function(k){
+    [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct', 'http_only', 'view_ttl' ].map(function(k){
         cfg[k] = parseInt(cfg[k]) || 0;
     });
 
@@ -31,7 +32,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    =  currTs(),
         httpOnly    = parseInt( cfg.http_only ) || 1,
         sectionId   = ( cfg.text_only ) ? '3612448' : '3612448',        // fires ad counicl
-        V           = cfg.version || '0.4.6',
+        V           = cfg.version || '0.4.8',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -179,7 +180,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     if ( useScroll )   $(ar).css('position', 'fixed');
 
     var timeoutId   = null,
-        viewTTL     = 10000,
+        viewTTL     = cfg.view_ttl ? ( cfg.view_ttl * 1000 ) : 0,
+        isOpen      = false,
         onIf        = false,  // cursor on iframe
         showCycles  = 0,
         removeOp    = function(){ 
@@ -199,19 +201,27 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 D  &&  console.log( 'maximizeOp ');  
                 $(xr).html('x');
                 $(xr).unbind('click').click( removeOp );
-                // do we allow it to minimize again? 
-                if ( ++showCycles == 2 ) viewTTL*=2;
+                showCycles++;
+                // do we allow it to minimize again?  do we go longer later? 
                 D  &&  console.log( showCycles + ' showCycles; installing setTimeout for minimizeOp; viewTTL='+viewTTL );
+                $(ar).unbind('hover').hover( function(){ onIf = true }, function(){ onIf = false } );
+                isOpen = true;
                 timeoutId = setTimeout( minimizeOp, viewTTL );
             });
         },
 
         minimizeOp = function(){ 
             D  &&  console.log( 'starting minimizeOp (rollback)' );
-
             if (!  $(ar).length ) { 
+                D  &&  console.log( '--bailing out of minimizeOp -- element was removed' );
                 return;                 // element has been removed via close click
             }
+            if ( onIf ){ 
+                D  &&  console.log('-- bailing out of minimizeOp; hover cancels and reschedules' );
+                timeoutId = setTimeout( minimizeOp, viewTTL );
+                return;
+            }        
+
             $(fr).animate( { width: '22px' } , 'slow', function(){ 
                 D  &&  console.log( 'installing hover handler....' );
                 $(ar).css('width','32px');
@@ -224,19 +234,22 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
 
 
     $(fr).ready( function() {
-        window.setTimeout( minimizeOp, viewTTL );
+
+        D  &&  console.log( "  frame content is ready; dispatching owl viewTTL=" + viewTTL );
+
+        if (viewTTL) { 
+            window.setTimeout( minimizeOp, viewTTL );
+         }
 
         $(ar).delay(1600).animate( { width: fullWidth }, tx )
         $(xr).click( removeOp );
-
-        D  &&  console.log( "  frame content is ready; dispatching owl " );
         
         cfOwl.dispatch( { action: 'load', orient: orient, c: cVal });
 
         $(ar).hover( function(){ onIf = true }, function(){ onIf = false } );
 
         $(window).blur( function() {
-            D  &&  console.log( "  BLUR EVENT " );
+            D  &&  console.log( "  BLUR EVENT click=" + onIf  );
             if( onIf ) {
                 cfOwl.dispatch( {action: 'click', orient: orient, c: cVal });
             }
