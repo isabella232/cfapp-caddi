@@ -32,7 +32,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    =  currTs(),
         httpOnly    = parseInt( cfg.http_only ) || 1,
         sectionId   = ( cfg.text_only ) ? '3612448' : '3612448',        // fires ad counicl
-        V           = cfg.version || '0.4.8',
+        V           = cfg.version || '0.4.9',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -155,7 +155,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' 
                 + sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
         css = 
-                ' #cfad  { height: 280px; width:0px; padding: 2px 0; position: absolute; z-index: 99999; overflow: hidden; } ' + 
+                ' #cfad  { height: 280px; width:0px; padding: 2px 0; position: absolute; z-index: 99999; line-height: 1px; overflow: hidden; } ' + 
                 ' #cfadb  { position:relative }' + 
                 ' #cfadf { height: 250px; width: 300px; margin: 0px; padding: 3px; background-color: #ffffff; border: 1px solid #404040; } ' +
                 ' #cfadx { background-color: #ffffff; margin-top: -1px; color: #404040; font-weight: bold; font: 16px Helvetica,Arial,Sans-serif; padding: 0px 5px 0.6px 4px; text-decoration: none; border: 0; border-bottom:  1px solid #404040; position: absolute; display: block; } ' + 
