@@ -32,7 +32,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    =  currTs(),
         httpOnly    = parseInt( cfg.http_only ) || 1,
         sectionId   = ( cfg.text_only ) ? '3612448' : '3612448',        // fires ad counicl
-        V           = cfg.version || '0.5.0',
+        V           = cfg.version || '0.5.1',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -171,7 +171,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
 
     $('<div/>').attr('id', a).appendTo('body');
     $('<div/>').attr('id', b).html(iframe).appendTo(ar)
-    $('<a href="#">x</a>').attr('id',x).appendTo(br);
+    $('<span>x</span>').attr('id',x).appendTo(br);
 
     $(ar).addClass( ( isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
     $(fr).addClass( isLeft ? 'cfadf-l' : 'cfadf-r' );
@@ -192,6 +192,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             }
             window.clearTimeout(timeoutId);
             $(ar).remove();
+            onIf = false;
             cfOwl.dispatch( {action: 'close', orient: orient, c: cVal });
         },
 
@@ -259,5 +260,4 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     D  &&  console.log('caddi code complete' );
 
 } );
-
 
