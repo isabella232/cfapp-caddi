@@ -32,7 +32,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    =  currTs(),
         httpOnly    = parseInt( cfg.http_only ) || 1,
         sectionId   = ( cfg.text_only ) ? '3612448' : '3612448',        // fires ad counicl
-        V           = cfg.version || '0.4.9',
+        V           = cfg.version || '0.5.0',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -233,7 +233,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         };
 
 
-    $(fr).ready( function() {
+    $(fr).on("load", function() {
 
         D  &&  console.log( "  frame content is ready; dispatching owl viewTTL=" + viewTTL );
 
@@ -259,6 +259,5 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     D  &&  console.log('caddi code complete' );
 
 } );
-
 
 
