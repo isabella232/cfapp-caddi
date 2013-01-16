@@ -29,10 +29,10 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         sessionTTL  = 1200,
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
         currTs      = function() { return parseInt( +(new Date) / 1000 ) },
-        currTime    =  currTs(),
+        currTime    = currTs(),
         httpOnly    = parseInt( cfg.http_only ) || 1,
-        sectionId   = ( cfg.text_only ) ? '3612448' : '3612448',        // fires ad counicl
-        V           = cfg.version || '0.5.1',
+        sectionId   = ( cfg.text_only ) ? parseInt(cfg.LYRM_id) ||  '3612448' : parseInt(cfg.LYRM_id) '3612448',        // fires ad counicl
+        V           = cfg.version || '0.5.2',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -76,7 +76,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         useScroll   = ( parseInt(cfg.scroll) || isBottom ) ? 1 : 0,
         minRes      = ( cfg.min_resolution && cfg.min_resolution.indexOf('x') > 0 ) ?  cfg.min_resolution.split('x') : null,
 
-        cookieName  =  'cfapp_caddi'+sectionId,
+        cookieName  =  'cfapp_caddi',
         cookie      =  readCookieAttrs( user.getCookie(cookieName) ),
         inSession   = (( currTime - cookie.sessionStart ) < sessionTTL ) ? 1 : 0,
         viewport    = dom.getViewport(),
