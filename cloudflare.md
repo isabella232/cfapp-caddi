@@ -1,11 +1,15 @@
-#Caddi
+#Slider 
 
-This app puts a dynamic advertisement on your web pages. 
+The Slider is an innovative ad unit that earns you revenue with every impression. It is complementary to your existing ads, and can be enabled with a single click. This app is available exclusively to CloudFlare users. 
 
-CADDI can be used to:
+#How it works
 
-* Make money!
+The Slider ad impression can be configured on your site with multiple settings. 
 
-![Screenshot of cadi](/images/apps/cfapp-caddi/caddi_screenshot.png "Screenshot")
+#Limitations
 
-For comments or support please contact me by <a href="mailto:gleeco@cloudflare.com">email</a> or <a href="http://twitter.com/gleecology">Twitter</a>.
+CloudFlare must pre-approve sites.  Initial configuration will be evaluated and either approved or marked as pending. 
+
+#Help
+
+For comments or support please contact CloudFlare by <a href="mailto:apps+support@cloudflare.com">email</a>.
