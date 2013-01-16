@@ -6,12 +6,12 @@
         "monetization",
         "ads"
         ],
-    "version": "0.5.1",
+    "version": "0.5.2",
     "category":"advertising",
     "contributors": [
         {
             "name" : "greg lee coleman",
-            "email" : "gleeco@cloudflare.com"
+            "email" : "apps+slider@cloudflare.com"
         }
     ],
     "repository" : {
@@ -19,6 +19,12 @@
         "url" : "https://github.com/gleecology/cfapp-caddi.git"
      },
     "main" : "./public/javascripts/caddi.js",
+
+    "account": {
+        "callback_url": "http://173.245.57.134:40420/api/partners/cloudflare/apps/slider",
+        "user_fields": ["email"]
+    },
+
 
     "dependencies" : {
     },
@@ -49,6 +55,15 @@
        },
        "interface": [
           {
+              "type" : "hidden",
+              "id"   : "LYRM_id",
+              "name" : "[a publisher id will be issued by CloudFlare]",
+              "value": "-1",
+              "domain_request" : true
+              
+          },
+ 
+          {
             "id": "orient",
             "name": "Ad Orientation",
             "description" : "Select where to place the Slider on your site",
@@ -62,6 +77,7 @@
           },
 
           {
+            "domain_request" : true,
             "id": "text_only",
             "name": "Ad Format",
             "description" : "Choose to display only static ads, or static and video ads",
