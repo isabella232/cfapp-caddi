@@ -1,6 +1,6 @@
 
-CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owl',       'cloudflare/jquery1.7' ], 
-                            function(cfg,           dom,                user,               owl,                    jQuery ) {
+CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owl',       'cloudflare/jquery1.7',     'cloudflare/console' ], 
+                            function(cfg,           dom,                user,               owl,                    jQuery,                     console) {
 
     var $ = jQuery; 
 
@@ -18,7 +18,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
 
     // integer-gize!
     [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct', 'http_only', 'view_ttl' ].map(function(k){
-        cfg[k] = parseInt(cfg[k]) || 0;
+        cfg[k] = parseInt(cfg[k], 10) || 0;
     });
 
     /*
@@ -28,17 +28,17 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     var delim       = '|',
         sessionTTL  = 1200,
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
-        currTs      = function() { return parseInt( +(new Date) / 1000 ) },
+        currTs      = function(){ return parseInt( (+(new Date()) / 1000 ), 10 ); },
         currTime    = currTs(),
-        httpOnly    = parseInt( cfg.http_only ) || 1,
-        sectionId   = ( cfg.text_only ) ? parseInt(cfg.LYRM_id) ||  '3612448' : parseInt(cfg.LYRM_id) '3612448',        // fires ad counicl
+        httpOnly    = parseInt( cfg.http_only, 10 ) || 1,
+        sectionId   = ( cfg.text_only ) ? parseInt(cfg.LYRM_id, 10) ||  '3612448' : parseInt(cfg.LYRM_id, 10) || '3612448',
         V           = cfg.version || '0.5.2',
         D           = cfg.debug || 1,
         cVal        = '',
 
         installCookie = function(name,val,ttl) {
+            var exp = new Date();
             if ( ttl ) { 
-                var exp = new Date();
                 exp.setTime( exp.getTime() + (ttl * 1000) );
             }
             D  &&  console.log( 'installCookie name=' + name + ' val=' + val );
@@ -51,12 +51,13 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             D  &&  console.log( "readCookieAttrs starts on str", str, arr );
 
             for ( i = 0; i < cookieCol.length; i++ ){ 
-                C[ cookieCol[i] ] = arr[i]  ? parseInt(arr[i]) : 0;
+                C[ cookieCol[i] ] = arr[i]  ? parseInt(arr[i], 10) : 0;
             }
             D  &&  console.log( "finish loop", C );
-            ( C.timeFirst && parseInt(C.timeFirst) && C.timeFirst > 1354151978 )  || ( C.timeFirst  = currTime );
+            ( C.timeFirst && parseInt(C.timeFirst, 10) && C.timeFirst > 1354151978 )  || ( C.timeFirst  = currTime );
             D  &&  console.log( "finish timeset" );
-            C.sessionStart || ( C.sessionStart = currTime );
+            if ( ! C.sessionStart ) C.sessionStart = currTime;
+
             D  &&  console.log( "readCookieAttrs returns", C );
             return C;
         },
@@ -73,7 +74,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         orient      = cfg.orient || 'left',
         isLeft      = orient.indexOf('left') >= 0   ? true : false,
         isBottom    = orient.indexOf('bottom') >= 0 ? true : false,
-        useScroll   = ( parseInt(cfg.scroll) || isBottom ) ? 1 : 0,
+        useScroll   = ( parseInt(cfg.scroll, 10) || isBottom ) ? 1 : 0,
         minRes      = ( cfg.min_resolution && cfg.min_resolution.indexOf('x') > 0 ) ?  cfg.min_resolution.split('x') : null,
 
         cookieName  =  'cfapp_caddi',
@@ -152,8 +153,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         fr  = '#'+f,
         tx  = 1000,     // slider slide time
         fullWidth   = '310px',
-        iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' 
-                + sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
+        iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' + 
+                sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
         css = 
                 ' #cfad  { height: 280px; width:0px; padding: 2px 0; position: absolute; z-index: 99999; line-height: 1px; overflow: hidden; } ' + 
                 ' #cfadb  { position:relative }' + 
@@ -170,7 +171,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     $('head').append(  '<style type="text/css">' + css + '</style>' );
 
     $('<div/>').attr('id', a).appendTo('body');
-    $('<div/>').attr('id', b).html(iframe).appendTo(ar)
+    $('<div/>').attr('id', b).html(iframe).appendTo(ar);
     $('<span>x</span>').attr('id',x).appendTo(br);
 
     $(ar).addClass( ( isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
@@ -205,7 +206,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 showCycles++;
                 // do we allow it to minimize again?  do we go longer later? 
                 D  &&  console.log( showCycles + ' showCycles; installing setTimeout for minimizeOp; viewTTL='+viewTTL );
-                $(ar).unbind('hover').hover( function(){ onIf = true }, function(){ onIf = false } );
+                $(ar).unbind('hover').hover( function(){ onIf = true; }, function(){ onIf = false; } );
                 isOpen = true;
                 timeoutId = setTimeout( minimizeOp, viewTTL );
             });
@@ -228,7 +229,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 $(ar).css('width','32px');
                 $(xr).html( isLeft ? '>' : '<' );
                 $(xr).unbind('click').click( maximizeOp );
-                $(ar).unbind('hover').hover( function(){ onIf = true; maximizeOp() }, function(){ onIf = false }  );
+                $(ar).unbind('hover').hover( function(){ onIf = true; maximizeOp(); }, function(){ onIf = false; }  );
             });
              
         };
@@ -242,19 +243,19 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             window.setTimeout( minimizeOp, viewTTL );
          }
 
-        $(ar).delay(1600).animate( { width: fullWidth }, tx )
+        $(ar).delay(1600).animate( { width: fullWidth }, tx );
         $(xr).click( removeOp );
         
         cfOwl.dispatch( { action: 'load', orient: orient, c: cVal });
 
-        $(ar).hover( function(){ onIf = true }, function(){ onIf = false } );
+        $(ar).hover( function(){ onIf = true; }, function(){ onIf = false; } );
 
         $(window).blur( function() {
             D  &&  console.log( "  BLUR EVENT click=" + onIf  );
             if( onIf ) {
                 cfOwl.dispatch( {action: 'click', orient: orient, c: cVal });
             }
-        }) 
+        }); 
     });
 
     D  &&  console.log('caddi code complete' );
