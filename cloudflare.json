@@ -6,7 +6,7 @@
         "monetization",
         "ads"
         ],
-    "version": "0.5.2",
+    "version": "0.5.3",
     "category":"advertising",
     "contributors": [
         {
@@ -48,11 +48,15 @@
             ]
         },
         "payment": {},
+
         "details": {
-           "Category": "advertising",
-           "Language": "English",
-           "Restrictions": "Use of the Slider is subject to approval. CloudFlare reserves the right to deny access due to misuse or abuse."
+           "Category": "Content Monetization",
+           "Language": "n/a",
+           "Payout": "Impressions served",
+           "Restrictions": "We reserve the right to deny approval or remove access to the Slider from any site with content that in our belief may be deemed negative in nature, illegal or offensive in any way, or as a result of misuse or abuse."
+
        },
+
        "interface": [
           {
               "type" : "hidden",
