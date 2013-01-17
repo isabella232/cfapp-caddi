@@ -32,7 +32,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    = currTs(),
         httpOnly    = parseInt( cfg.http_only, 10 ) || 1,
         sectionId   = ( cfg.text_only ) ? parseInt(cfg.LYRM_id, 10) ||  '3612448' : parseInt(cfg.LYRM_id, 10) || '3612448',
-        V           = cfg.version || '0.5.3',
+        V           = cfg.version || '0.5.4',
         D           = cfg.debug || 1,
         cVal        = '',
 

@@ -22,14 +22,23 @@ The Slider is an innovative ad unit that allows any publisher to generate increm
 ## How It Works
 
 1.  Enable the Slider within the CloudFlare Apps Manager
+
 2.  Configure when and where the Slider appears. You have complete control over:
+
     a.  **Orientation:** position the Slider on the top left or right, bottom left or right, or you may also choose to display the Slider only when a visitor reaches the end of your content.
+
     b.  **Format:** choose between static ads (images and flash), and static and video ads.  Video ads tend to pay more, but don’t suit every site.  
+
     c.  **Duration of Appearance:** you can choose to minimize the Slider after a predetermined period of time after it appears.  Choose between 20, 30 or 45 seconds, or select “Do not minimize” if you would like the Slider to remain fully visible on the page.  
+
     d.  **Minimum Window Size:** Limit display of the Slider to certain window sizes.  This option can be used to prevent the slider from covering your site’s content when viewed at low window resolutions. Do note that the Slider will not appear  on pages viewed by a mobile browser
+
     e.  **Scrollability:** Turn Sticky Scroll “on” to allow the Slider to scroll with your content
+
     f.  **Impressions per Session:** Limit the number of ads shown to your visitors during a single session / site visit (20 minutes).
+
     g.  **Visitor Opt-out Periods:** After a visitor closes the Slider (by clicking the X close icon), you can toggle the period of time to wait before showing another ad.    
+
 3.  The Slider works instantly!   You will start to earn incremental revenue immediately.  
 
 
