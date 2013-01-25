@@ -6,7 +6,7 @@
         "monetization",
         "ads"
         ],
-    "version": "0.5.5",
+    "version": "0.5.6",
     "category":"advertising",
     "contributors": [
         {
@@ -24,7 +24,6 @@
         "callback_url": "http://173.245.57.134:40420/api/partners/cloudflare/apps/slider",
         "user_fields": ["email"]
     },
-
 
     "dependencies" : {
     },

@@ -1,11 +1,9 @@
-
 CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owl',       'cloudflare/jquery1.7',     'cloudflare/console' ], 
-                            function(cfg,           dom,                user,               owl,                    jQuery,                     console) {
-
+                            function(cfg,           dom,                user,               owl,                    jQuery,                     console ) {
     var $ = jQuery; 
 
     /* config vars:
-     *  text_only       [ 0  | 1 ]
+     *  text_only       [ 0 | 1 ]
      *  scroll          [ 0 | 1 ]
      *  debug           [ 1 | 0 ]
      *  user_pause_ttl  [ -1 | 0 | INT ] seconds
@@ -13,7 +11,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
      *  ss_view_max_ct  [ 0 | INT ]
      *  view_ttl        [ 0 | INT ]  seconds; but used in MS timer
      *  min_resolution  [ 0 | 1024x0 | 1600x0 ]
-     *
+     *  http_only       [ 0 | 1 ]  <--
      */
 
     // integer-gize!
@@ -30,9 +28,9 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         cookieCol   = ['timeFirst','sessionStart','N','sessionCt','sessionViewCt','pauseUntil','pauseSkipCt','impCt'],
         currTs      = function(){ return parseInt( (+(new Date()) / 1000 ), 10 ); },
         currTime    = currTs(),
-        httpOnly    = parseInt( cfg.http_only, 10 ) || 1,
+        httpOnly    = 1,
         sectionId   = ( cfg.text_only ) ? parseInt(cfg.LYRM_id, 10) ||  '3612448' : parseInt(cfg.LYRM_id, 10) || '3612448',
-        V           = cfg.version || '0.5.5',
+        V           = cfg.version || '0.5.6',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -53,9 +51,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             for ( i = 0; i < cookieCol.length; i++ ){ 
                 C[ cookieCol[i] ] = arr[i]  ? parseInt(arr[i], 10) : 0;
             }
-            D  &&  console.log( "finish loop", C );
             ( C.timeFirst && parseInt(C.timeFirst, 10) && C.timeFirst > 1354151978 )  || ( C.timeFirst  = currTime );
-            D  &&  console.log( "finish timeset" );
             if ( ! C.sessionStart ) C.sessionStart = currTime;
 
             D  &&  console.log( "readCookieAttrs returns", C );
@@ -74,7 +70,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         orient      = cfg.orient || 'left',
         isLeft      = orient.indexOf('left') >= 0   ? true : false,
         isBottom    = orient.indexOf('bottom') >= 0 ? true : false,
-        useScroll   = ( parseInt(cfg.scroll, 10) || isBottom ) ? 1 : 0,
+        useScroll   = cfg.scroll ? true : false,
         minRes      = ( cfg.min_resolution && cfg.min_resolution.indexOf('x') > 0 ) ?  cfg.min_resolution.split('x') : null,
 
         cookieName  =  'cfapp_caddi',
@@ -93,12 +89,13 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
     if (dom.ios || dom.android ){ 
         terminate++;
     }
+    if ( window.cf_slider_disable ) { 
+        terminate++;
+        D  &&  console.log( "cf_slider_disable by publisher; terminate="+terminate);
+    }
     if ( httpOnly &&  window.location.protocol === 'https:' ){
         terminate++;
         D  &&  console.log( "httpOnly; terminate="+terminate);
-    }
-    if (window.cf_slider_disable ){
-        terminate++;
     }
 
     if(  minRes && viewport ) {
@@ -106,7 +103,6 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         ( minRes[1] && viewport.height ) && ( minRes[1] <= viewport.height || terminate++ );
         D  &&  console.log( "minRes check; terminate=" + terminate, minRes, viewport );
     }
-    
     if( cookie.pauseUntil && cookie.pauseUntil >= currTime ){
         cookie.pauseSkipCt++;
         terminate++;
@@ -166,28 +162,20 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 ' .cfad-l { left: 0px; } .cfad-r { right: 0px; text-align:right}  ' + 
                 ' .cfadf-l { border-left: 0px ! important; } .cfadf-r { border-right:0px ! important; } ' + 
                 ' .cfadx-l { border-right: 1px solid #404040 ! important; left : 0 ! important; } .cfadx-r { border-left:  1px solid #404040 ! important; right: 0 ! important; } ' + 
-                ' .cfad-y-bot { bottom: 15px; } ' + 
-                ' .cfad-y-top { top: 15px; } ' ; 
+                ar + '.cfad-y-bot { bottom: 15px; } ' + 
+                ar + '.cfad-y-top { top: 15px; } ' ; 
 
-    D  &&  console.log( "vars were set: isLeft=" + isLeft );
-
-    $('head').append(  '<style type="text/css">' + css + '</style>' );
-
-    $('<div/>').attr('id', a).appendTo('body');
-    $('<div/>').attr('id', b).html(iframe).appendTo(ar);
-    $('<span>x</span>').attr('id',x).appendTo(br);
-
-    $(ar).addClass( ( isLeft ? 'cfad-l' : 'cfad-r') +  ' ' + ( isBottom ? 'cfad-y-bot' : 'cfad-y-top' ) );
-    $(fr).addClass( isLeft ? 'cfadf-l' : 'cfadf-r' );
-    $(xr).addClass( isLeft ? 'cfadx-l' : 'cfadx-r' );
-
-    if ( useScroll )   $(ar).css('position', 'fixed');
+    D  &&  console.log( "vars were set: isLeft=" + isLeft + ' isBottom=' + isBottom +  ' useScroll='+useScroll);
 
     var timeoutId   = null,
         viewTTL     = cfg.view_ttl ? ( cfg.view_ttl * 1000 ) : 0,
         isOpen      = false,
-        onIf        = false,  // cursor on iframe
+        onIf        = false,    // cursor on iframe
+        isAttached = false,
         showCycles  = 0,
+        delay       = 0,        // for lazyload bottom time delta
+        bottomBuffer= 500,
+
         removeOp    = function(){ 
             if ( cfg.user_pause_ttl ){
                 D  &&  console.log( 'adding user_pause_ttl = ' + cfg.user_pause_ttl );
@@ -235,33 +223,102 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 $(ar).unbind('hover').hover( function(){ onIf = true; maximizeOp(); }, function(){ onIf = false; }  );
             });
              
-        };
+        },
+        frLoad  = function(){ 
+            D  &&  console.log( "  frame content is ready; dispatching owl viewTTL=" + viewTTL );
 
+            if (viewTTL) { 
+                window.setTimeout( minimizeOp, viewTTL );
+             }
 
-    $(fr).on("load", function() {
+            $(ar).delay(1600).animate( { width: fullWidth }, tx );
+            $(xr).click( removeOp );
+            
+            cfOwl.dispatch( { action: 'load', orient: orient, c: cVal, delay: delay });
 
-        D  &&  console.log( "  frame content is ready; dispatching owl viewTTL=" + viewTTL );
+            $(ar).hover( function(){ onIf = true; }, function(){ onIf = false; } );
 
-        if (viewTTL) { 
-            window.setTimeout( minimizeOp, viewTTL );
-         }
+            $(window).blur( function() {
+                D  &&  console.log( "  BLUR EVENT click=" + onIf  );
+                if( onIf ) {
+                    cfOwl.dispatch( {action: 'click', orient: orient, c: cVal });
+                }
+            }); 
 
-        $(ar).delay(1600).animate( { width: fullWidth }, tx );
-        $(xr).click( removeOp );
-        
-        cfOwl.dispatch( { action: 'load', orient: orient, c: cVal });
+        },
+        attach = function(){  
+            D && console.log( "attach() is running after t delta=" + ( currTs() - currTime ) );
 
-        $(ar).hover( function(){ onIf = true; }, function(){ onIf = false; } );
+            $('head').append(  '<style type="text/css">' + css + '</style>' );
+            $('<div/>').attr('id', a).appendTo('body');
+            $('<div/>').attr('id', b).html(iframe).appendTo(ar);
+            $('<span>x</span>').attr('id',x).appendTo(br);
 
-        $(window).blur( function() {
-            D  &&  console.log( "  BLUR EVENT click=" + onIf  );
-            if( onIf ) {
-                cfOwl.dispatch( {action: 'click', orient: orient, c: cVal });
+            $(ar).addClass( isLeft ? 'cfad-l' : 'cfad-r' ); 
+            $(fr).addClass( isLeft ? 'cfadf-l' : 'cfadf-r' );
+            $(xr).addClass( isLeft ? 'cfadx-l' : 'cfadx-r' );
+ 
+            if ( useScroll )   $(ar).css('position', 'fixed');
+
+            if ( isBottom ){ 
+                if ( useScroll ){  
+                    $(ar).addClass('cfad-y-bot');  
+                }else{
+                    $(ar).css('top', $(document).height() - 300 );
+                }
+            }else{
+                $(ar).addClass('cfad-y-top');
             }
-        }); 
+           isAttached = true;
+            $(fr).on("load", frLoad);
+        },
+        sinceLast   = currTime,   // debug only
+        timex       = null,
+        scrollWatch =  function(){ 
+            if (timex) clearTimeout(timex); 
+            timex = setTimeout( function(){
+                timex = null;
+
+                if (isAttached)  { 
+                    D  && console.log( "scrollWatch about to be destroyed .... "  );
+                    $(window).off('scroll', scrollWatch);
+                    return;
+                }
+                var end     = $(document).height(),
+                    at      =  $(window).height() + $(window).scrollTop(),
+                    toEnd   = end - at,
+                    since   = +(new Date()) / 1000;
+
+                D && console.log( 'scrollWatch end=' + end + ' at=' + at + ' distance toEnd=' + toEnd + ' since=' + (since - sinceLast) );
+                sinceLast = since;
+                if ( toEnd <= bottomBuffer ){ 
+                    delay =  currTs() - currTime;
+                    $(ar).show();
+                    attach();
+                }
+            }, 70);
+
+        }; 
+
+    $(document).ready(function(){
+        if ( isBottom ){ 
+            var currPos = $(window).height() + $(window).scrollTop();
+            D && console.log( "checking curr_pos=" + currPos  + " and doc.height=" + $(document).height() );
+
+            if ( currPos > ( $(document).height() - bottomBuffer) ) {
+                D && console.log( "skipping scrollWatch handler; already within range at curr_pos=" + currPos );
+                attach();
+            }
+            else{
+                D && console.log( "installing scrollWatch handler; doc_size=" + $(document).height() + " curr_pos=" + currPos );
+                var timex = null;
+                $(window).on('scroll', scrollWatch );
+            }
+        }else{
+            attach(); 
+        }
     });
 
     D  &&  console.log('caddi code complete' );
 
 } );
-
