@@ -15,7 +15,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
      */
 
     // integer-gize!
-    [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct', 'http_only', 'view_ttl' ].map(function(k){
+    [ 'text_only', 'scroll', 'debug', 'user_pause_ttl', 'ss_view_max_ct', 'http_only', 'view_ttl', 'LYRM_id' ].map(function(k){
         cfg[k] = parseInt(cfg[k], 10) || 0;
     });
 
@@ -29,7 +29,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTs      = function(){ return parseInt( (+(new Date()) / 1000 ), 10 ); },
         currTime    = currTs(),
         httpOnly    = 1,
-        sectionId   = ( cfg.text_only ) ? parseInt(cfg.LYRM_id, 10) ||  '3612448' : parseInt(cfg.LYRM_id, 10) || '3612448',
+        sectionId   = ( cfg.text_only ) ? cfg.LYRM_id || '3612448' : cfg.LYRM_id || '3612448',
         V           = cfg.version || '0.5.6',
         D           = cfg.debug || 1,
         cVal        = '',
@@ -185,7 +185,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             window.clearTimeout(timeoutId);
             $(ar).remove();
             onIf = false;
-            cfOwl.dispatch( {action: 'close', orient: orient, c: cVal });
+            cfOwl.dispatch( {action: 'close', orient: orient, c: cVal, lyrmid: cfg.LYRM_id });
         },
 
         maximizeOp = function(){
@@ -234,14 +234,14 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             $(ar).delay(1600).animate( { width: fullWidth }, tx );
             $(xr).click( removeOp );
             
-            cfOwl.dispatch( { action: 'load', orient: orient, c: cVal, delay: delay });
+            cfOwl.dispatch( { action: 'load', orient: orient, c: cVal, delay: delay, lyrmid: cfg.LYRM_id  });
 
             $(ar).hover( function(){ onIf = true; }, function(){ onIf = false; } );
 
             $(window).blur( function() {
                 D  &&  console.log( "  BLUR EVENT click=" + onIf  );
                 if( onIf ) {
-                    cfOwl.dispatch( {action: 'click', orient: orient, c: cVal });
+                    cfOwl.dispatch( {action: 'click', orient: orient, c: cVal, lyrmid: cfg.LYRM_id  });
                 }
             }); 
 
