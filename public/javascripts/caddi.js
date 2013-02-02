@@ -30,7 +30,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         currTime    = currTs(),
         httpOnly    = 1,
         sectionId   = ( cfg.text_only ) ? cfg.LYRM_id || '3612448' : cfg.LYRM_id || '3612448',
-        V           = cfg.version || '0.5.6',
+        V           = cfg.version || '0.5.7',
         D           = cfg.debug || 1,
         cVal        = '',
 
@@ -174,7 +174,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         isAttached = false,
         showCycles  = 0,
         delay       = 0,        // for lazyload bottom time delta
-        bottomBuffer= 500,
+        bottomBuffer= 2000,
 
         removeOp    = function(){ 
             if ( cfg.user_pause_ttl ){
