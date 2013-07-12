@@ -6,8 +6,8 @@
         "monetization",
         "ads"
         ],
-    "version": "0.5.7",
-    "category":"advertising",
+    "version": "0.5.8",
+    "category":"monetization",
     "contributors": [
         {
             "name" : "greg lee coleman",
@@ -63,16 +63,35 @@
               "name" : "[a publisher id will be issued by CloudFlare]",
               "value": "-1",
               "domain_request" : true
-              
           },
- 
+          {
+              "type" : "hidden",
+              "id"   : "publisher_id",
+              "name" : "[a publisher id will be issued by CloudFlare]",
+              "value": "-1",
+              "domain_request" : true
+          },
+          {
+              "type" : "hidden",
+              "id"   : "appnexus_placement_id",
+              "name" : "[issued by CloudFlare]",
+              "value": "-1",
+              "domain_request" : true
+          },
+          {
+              "type" : "hidden",
+              "id"   : "ext_inv_code",
+              "name" : "[issued by CloudFlare]",
+              "value": "-1",
+              "domain_request" : true
+          },
           {
             "id": "orient",
             "name": "Ad Orientation",
             "description" : "Select where to place the Slider on your site",
             "type": "select",
             "options": [
-                { "value": "left",          "label": "Left Top"             },
+                { "value": "left",          "label": "Left Top"         },
                 { "value": "right",         "label": "Right Top",    "selected": "true" },
                 { "value": "left_bottom",   "label": "Left Bottom"      },
                 { "value": "right_bottom",  "label": "Right Bottom"     }
@@ -97,7 +116,6 @@
                 }
              ] 
           },
-            
 
           {
             "id": "view_ttl",
