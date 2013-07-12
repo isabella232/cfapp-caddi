@@ -175,10 +175,10 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         iframe  = '<iframe id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ib.adnxs.com/tt?size=300x250' + 
             '&id=' + placement_id + 
             '&ext_inv_code=' + ext_inv_code + 
-                '"></iframe>',
+                '"></iframe>';
     }else{
         iframe  = '<IFRAME id="'+f+'" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=300 HEIGHT=250 SRC="//ad.yieldmanager.com/st?ad_type=iframe&ad_size=300x250&section=' + 
-                sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>',
+                sectionId + '&pub_url=' + escape(location.href)  + '"></IFRAME>';
     }
 
     var timeoutId   = null,
