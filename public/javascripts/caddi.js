@@ -33,8 +33,9 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         ext_inv_code= ( cfg.ext_inv_code && cfg.ext_inv_code != '_disabled_' ) ? cfg.ext_inv_code : null,
         placement_id= cfg.appnexus_placement_id,
         sectionId   = publisher_id,
-        V           = cfg.version || '0.6.1',
+        V           = cfg.version || '0.6.2',
         D           = cfg.debug || 1,
+        psa_disable = 1,
         cVal        = '',
 
         installCookie = function(name,val,ttl) {
@@ -176,6 +177,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             '&id=' + placement_id + 
             '&ext_inv_code=' + ext_inv_code + 
             ( ( isBottom && ! useScroll ) ? '' : '&position=above' ) + 
+            (  psa_disable ? '&psa=0' : '' ) +
             '&referrer=' + location.host.toLowerCase() + 
                 '"></iframe>';
     }else{
