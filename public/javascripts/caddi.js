@@ -31,7 +31,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         httpOnly    = 1,
         ext_inv_code= ( cfg.ext_inv_code && cfg.ext_inv_code != '_disabled_' ) ? cfg.ext_inv_code : null,
         placement_id= cfg.appnexus_placement_id,
-        V           = cfg.version || '0.6.4',
+        V           = cfg.version || '0.6.5',
         D           = cfg.debug || (window.location.hash.match('debug_view') ? 1 : 0),
         psa_disable = 1,
         cVal        = '',
@@ -51,7 +51,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 arr = str ? str.split(delim) : [];
             if (D) console.log( "readCookieAttrs starts on str", str, arr );
 
-            for ( i = 0; i < cookieCol.length; i++ ){ 
+            for ( var i = 0; i < cookieCol.length; i++ ){
                 C[ cookieCol[i] ] = arr[i]  ? parseInt(arr[i], 10) : 0;
             }
             ( C.timeFirst && parseInt(C.timeFirst, 10) && C.timeFirst > 1354151978 )  || ( C.timeFirst  = currTime );
@@ -61,9 +61,9 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             return C;
         },
 
-        writeCookie = function(cName, C, ttl){ 
+        writeCookie = function(cName, C, ttl){
             var vals = [];
-            for ( i = 0; i < cookieCol.length; i++){ 
+            for ( var i = 0; i < cookieCol.length; i++){
                 vals.push( C[cookieCol[i]] || 0);
             }
             cVal    = vals.join(delim);
@@ -121,7 +121,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         cookie.sessionStart     = currTime;
         cookie.sessionViewCt    = 0;
     }
-   
+
 
     if ( cfg.ss_view_max_ct && cookie.sessionViewCt >= cfg.ss_view_max_ct ) {
         terminate++;
@@ -171,7 +171,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 ' .cfadf-l { border-left: 0px ! important; } .cfadf-r { border-right:0px ! important; } ' + 
                 ' .cfadx-l { border-right: 1px solid #404040 ! important; left : 0 ! important; } .cfadx-r { border-left:  1px solid #404040 ! important; right: 0 ! important; } ' + 
                 ar + '.cfad-y-bot { bottom: 15px; } ' + 
-                ar + '.cfad-y-top { top: 15px; } ' ; 
+                ar + '.cfad-y-top { top: 15px; } ',
 
         timeoutId   = null,
         adParam       = '/cdn-cgi/nexp/apps/slider_iframe.html?' +
@@ -214,7 +214,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
                 if (D)  console.log( showCycles + ' showCycles; installing setTimeout for minimizeOp; viewTTL='+viewTTL );
                 $(ar).unbind('hover').hover( function(){ onIf = true; }, function(){ onIf = false; } );
                 isOpen = true;
-                timeoutId = setTimeout( minimizeOp, viewTTL );
+                timeoutId = window.setTimeout( minimizeOp, viewTTL );
             });
         },
 
@@ -226,7 +226,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             }
             if ( onIf ){ 
                 if (D)  console.log('-- bailing out of minimizeOp; hover cancels and reschedules' );
-                timeoutId = setTimeout( minimizeOp, viewTTL );
+                timeoutId = window.setTimeout( minimizeOp, viewTTL );
                 return;
             }
 
@@ -241,6 +241,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
 
         msgAck = null,
         msgTx   = null,
+        msgStart = null,
+        msgWaitTTL = 60,
         receiveMessage = function(event) {
             var h = window.location.protocol + '//' + location.host.toLowerCase();
             var m = event.data;
@@ -260,17 +262,22 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         },
 
         frStatus = function(){
+
+            if (msgTx) window.clearTimeout(msgTx);
+
             if ( msgAck ) {
                 msgTx = null;
                 return msgAck == 'CANCEL' ? removeOp('cancel_empty') : frLoad();
             }
-            if((currTs() - currTime) > 3){
+            if (! msgStart ) msgStart = currTs();
+            var currWait = currTs() - msgStart;
+
+            if( currWait > msgWaitTTL ){
                 msgTx = null;
                 return removeOp('cancel_timeout');
             }
             document.getElementById(f).contentWindow.postMessage('cancel' + (D ? ',debug' : ''), adUrl);
-            if (msgTx) clearTimeout(msgTx);
-            msgTx = setTimeout( frStatus, 100 );
+            msgTx = window.setTimeout( frStatus, currWait < 4 ? 400 : 2000 );
         },
 
         frLoad  = function(){
@@ -323,8 +330,8 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         sinceLast   = currTime,   // debug only
         timex       = null,
         scrollWatch = function(){
-            if (timex) clearTimeout(timex); 
-            timex = setTimeout( function(){
+            if (timex) window.clearTimeout(timex);
+            timex = window.setTimeout( function(){
                 timex = null;
 
                 if (isAttached)  {
@@ -361,7 +368,6 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
             }
             else{
                 if (D) console.log( "installing scrollWatch handler; doc_size=" + $(document).height() + " curr_pos=" + currPos );
-                var timex = null;
                 $(window).on('scroll', scrollWatch );
             }
         }else{
