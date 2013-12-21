@@ -30,7 +30,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         httpOnly    = 1,
         ext_inv_code= ( cfg.ext_inv_code && cfg.ext_inv_code != '_disabled_' ) ? cfg.ext_inv_code : null,
         placement_id= cfg.appnexus_placement_id,
-        V           = cfg.version || '0.6.7',
+        V           = cfg.version || '0.6.8',
         D           = cfg.debug || (window.location.hash.match('debug_view') ? 1 : 0),
         psa_disable = 1,
         cVal        = '',
