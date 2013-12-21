@@ -30,7 +30,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         httpOnly    = 1,
         ext_inv_code= ( cfg.ext_inv_code && cfg.ext_inv_code != '_disabled_' ) ? cfg.ext_inv_code : null,
         placement_id= cfg.appnexus_placement_id,
-        V           = cfg.version || '0.6.5',
+        V           = cfg.version || '0.6.7',
         D           = cfg.debug || (window.location.hash.match('debug_view') ? 1 : 0),
         psa_disable = 1,
         cVal        = '',
@@ -174,7 +174,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
 
         timeoutId   = null,
         currHost    = window.location.host.toLowerCase(),
-        adParam       = '/cdn-cgi/nexp/apps/slider_iframe.html?' +
+        adParam       = '/cdn-cgi/nexp/acv=' + currTime  + '/apps/caddi/slider_iframe.html?' +
             'size=300x250' + '&id=' + placement_id +
             '&ext_inv_code=' + ext_inv_code + 
             ( ( isBottom && ! useScroll ) ? '' : '&position=above' ) +
