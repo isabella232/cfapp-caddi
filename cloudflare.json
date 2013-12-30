@@ -21,7 +21,7 @@
     "main" : "./public/javascripts/caddi.js",
 
     "account": {
-        "callback_url": "http://173.245.57.134:40420/api/partners/cloudflare/apps/slider",
+        "callback_url": "http://127.0.0.1:40420/api/partners/cloudflare/apps/slider",
         "user_fields": ["email"]
     },
 
