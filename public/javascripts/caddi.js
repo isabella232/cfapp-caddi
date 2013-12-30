@@ -1,5 +1,5 @@
 CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudflare/user',  'cloudflare/owl',   'cloudflare/jquery1.7',     'cloudflare/console' ],
-                            function(cfg,           dom,                user,               owl,                $,                     console ) {
+                            function(cfg,           dom,                user,               owl,                $,                          console ) {
 
     /* config vars:
      *  text_only       [ 0 | 1 ]
@@ -30,7 +30,7 @@ CloudFlare.define( 'caddi', [       'caddi/config', 'cloudflare/dom',   'cloudfl
         httpOnly    = 1,
         ext_inv_code= ( cfg.ext_inv_code && cfg.ext_inv_code != '_disabled_' ) ? cfg.ext_inv_code : null,
         placement_id= cfg.appnexus_placement_id,
-        V           = cfg.version || '0.6.8',
+        V           = cfg.version || '0.6.9',
         D           = cfg.debug || (window.location.hash.match('debug_view') ? 1 : 0),
         psa_disable = 1,
         cVal        = '',
