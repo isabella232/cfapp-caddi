@@ -57,4 +57,4 @@ Earnings are available to publishers on a net-60 day basis.  For example, earnin
 * The Slider will not appear on pages viewed in a mobile browser
 * Once active, the Slider will appear on every page of any site in which the Slider is enabled; a tool to control where the Slider appears on your site will be available shortly
 * Reporting of ad performance and earnings will be available by periodic e-mail
-* To report a bug or make a suggestion during the beta period, please send correspondence to <private-beta@cloudflare.com>
+* To report a bug or make a suggestion during the beta period, please send correspondence to <ads@cloudflare.com>
